@@ -19,7 +19,7 @@ public class NotificationManager: ObservableObject {
         }
     }
     
-    func setupContent(title: String, subtitle: String?, body: String, sound: UNNotificationSound?) -> UNMutableNotificationContent {
+    func setupContent(title: String, subtitle: String? = "", body: String, sound: UNNotificationSound? = UNNotificationSound.default) -> UNMutableNotificationContent {
         let content = UNMutableNotificationContent()
         content.title = title
         content.subtitle = subtitle ?? ""
@@ -29,7 +29,7 @@ public class NotificationManager: ObservableObject {
         return content
     }
     
-    func scheduleNotification(identifier: String?, content: UNMutableNotificationContent, trigger: UNNotificationTrigger) {
+    func scheduleNotification(identifier: String? = UUID().uuidString, content: UNMutableNotificationContent, trigger: UNNotificationTrigger) {
         let request = UNNotificationRequest(identifier: identifier ?? UUID().uuidString, content: content, trigger: trigger)
         
         UNUserNotificationCenter.current().add(request) { error in
@@ -41,23 +41,19 @@ public class NotificationManager: ObservableObject {
         }
     }
     
-    public func scheduleTimeIntervalNotification(identifier: String?, title: String, subtitle: String?, body: String, sound: UNNotificationSound?, interval: TimeInterval, repeats: Bool) {
+    public func scheduleTimeIntervalNotification(identifier: String? = UUID().uuidString, title: String, subtitle: String? = "", body: String, sound: UNNotificationSound? = UNNotificationSound.default, interval: TimeInterval, repeats: Bool) {
         let content = setupContent(title: title, subtitle: subtitle, body: body, sound: sound)
         let trigger = UNTimeIntervalNotificationTrigger(timeInterval: interval, repeats: repeats)
         
         scheduleNotification(identifier: identifier, content: content, trigger: trigger)
     }
     
-    public func scheduleDailyNotification(identifier: String?, title: String, subtitle: String?, body: String, sound: UNNotificationSound?, hour: Int, minute: Int?, second: Int?, repeats: Bool) {
+    public func scheduleDailyNotification(identifier: String? = UUID().uuidString, title: String, subtitle: String?, body: String, sound: UNNotificationSound? = UNNotificationSound.default, hour: Int, minute: Int? = 0, second: Int? = 0, repeats: Bool) {
         let content = setupContent(title: title, subtitle: subtitle, body: body, sound: sound)
         var date = DateComponents()
         date.hour = hour
-        if minute != nil {
-            date.minute = minute
-        }
-        if second != nil {
-            date.second = second
-        }
+        date.minute = minute
+        date.second = second
         let trigger = UNCalendarNotificationTrigger(dateMatching: date, repeats: repeats)
         
         scheduleNotification(identifier: identifier, content: content, trigger: trigger)
