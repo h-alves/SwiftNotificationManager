@@ -41,4 +41,10 @@ public class NotificationManager: ObservableObject {
         }
     }
     
+    public func scheduleTimeIntervalNotification(identifier: String?,title: String, subtitle: String?, body: String, sound: UNNotificationSound?, interval: TimeInterval, repeats: Bool) {
+        let content = setupContent(title: title, subtitle: subtitle, body: body, sound: sound)
+        let trigger = UNTimeIntervalNotificationTrigger(timeInterval: interval, repeats: repeats)
+        
+        scheduleNotification(identifier: identifier, content: content, trigger: trigger)
+    }
 }
