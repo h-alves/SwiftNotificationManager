@@ -49,6 +49,13 @@ public class NotificationManager: ObservableObject {
         scheduleNotification(identifier: identifier, content: content, trigger: trigger)
     }
     
+    public func scheduleCalendarNotification(identifier: String = UUID().uuidString, title: String, subtitle: String = "", body: String, sound: UNNotificationSound = UNNotificationSound.default, date: DateComponents, repeats: Bool) {
+        let content = setupContent(title: title, subtitle: subtitle, body: body, sound: sound)
+        let trigger = UNCalendarNotificationTrigger(dateMatching: date, repeats: repeats)
+        
+        scheduleNotification(identifier: identifier, content: content, trigger: trigger)
+    }
+    
     public func scheduleDailyNotification(identifier: String = UUID().uuidString, title: String, subtitle: String = "", body: String, sound: UNNotificationSound = UNNotificationSound.default, hour: Int, minute: Int? = 0, second: Int? = 0, repeats: Bool) {
         let content = setupContent(title: title, subtitle: subtitle, body: body, sound: sound)
         
@@ -82,4 +89,5 @@ public class NotificationManager: ObservableObject {
     public func cancelPendingNotification(identifier: String) {
         UNUserNotificationCenter.current().removePendingNotificationRequests(withIdentifiers: [identifier])
     }
+    
 }
