@@ -7,6 +7,6 @@ import UserNotifications
 @available(iOS 13.0, *)
 public class NotificationManager: ObservableObject {
     
-    static let shared = NotificationManager()
+    public static let shared = NotificationManager()
     
 }
