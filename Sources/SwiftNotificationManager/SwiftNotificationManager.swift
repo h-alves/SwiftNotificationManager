@@ -3,6 +3,7 @@
 
 import Foundation
 import UserNotifications
+import CoreLocation
 
 @available(iOS 13.0, *)
 public class NotificationManager: ObservableObject {
@@ -29,8 +30,8 @@ public class NotificationManager: ObservableObject {
         return content
     }
     
-    func scheduleNotification(identifier: String? = UUID().uuidString, content: UNMutableNotificationContent, trigger: UNNotificationTrigger) {
-        let request = UNNotificationRequest(identifier: identifier ?? UUID().uuidString, content: content, trigger: trigger)
+    func scheduleNotification(identifier: String = UUID().uuidString, content: UNMutableNotificationContent, trigger: UNNotificationTrigger) {
+        let request = UNNotificationRequest(identifier: identifier, content: content, trigger: trigger)
         
         UNUserNotificationCenter.current().add(request) { error in
             if let error = error {
@@ -41,20 +42,35 @@ public class NotificationManager: ObservableObject {
         }
     }
     
-    public func scheduleTimeIntervalNotification(identifier: String? = UUID().uuidString, title: String, subtitle: String? = "", body: String, sound: UNNotificationSound? = UNNotificationSound.default, interval: TimeInterval, repeats: Bool) {
+    public func scheduleTimeIntervalNotification(identifier: String = UUID().uuidString, title: String, subtitle: String = "", body: String, sound: UNNotificationSound = UNNotificationSound.default, interval: TimeInterval, repeats: Bool) {
         let content = setupContent(title: title, subtitle: subtitle, body: body, sound: sound)
         let trigger = UNTimeIntervalNotificationTrigger(timeInterval: interval, repeats: repeats)
         
         scheduleNotification(identifier: identifier, content: content, trigger: trigger)
     }
     
-    public func scheduleDailyNotification(identifier: String? = UUID().uuidString, title: String, subtitle: String?, body: String, sound: UNNotificationSound? = UNNotificationSound.default, hour: Int, minute: Int? = 0, second: Int? = 0, repeats: Bool) {
+    public func scheduleDailyNotification(identifier: String = UUID().uuidString, title: String, subtitle: String = "", body: String, sound: UNNotificationSound = UNNotificationSound.default, hour: Int, minute: Int? = 0, second: Int? = 0, repeats: Bool) {
         let content = setupContent(title: title, subtitle: subtitle, body: body, sound: sound)
+        
         var date = DateComponents()
         date.hour = hour
         date.minute = minute
         date.second = second
+        
         let trigger = UNCalendarNotificationTrigger(dateMatching: date, repeats: repeats)
+        
+        scheduleNotification(identifier: identifier, content: content, trigger: trigger)
+    }
+    
+    public func scheduleLocationNotification(identifier: String = UUID().uuidString, title: String, subtitle: String = "", body: String, sound: UNNotificationSound? = UNNotificationSound.default, latitude: Double, longitude: Double, radius: Double = 2000.0, placeID: String, repeats: Bool) {
+        let content = setupContent(title: title, subtitle: subtitle, body: body, sound: sound)
+        let center = CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
+        let region = CLCircularRegion(center: center, radius: radius, identifier: placeID)
+        
+        region.notifyOnEntry = true
+        region.notifyOnExit = false
+        
+        let trigger = UNLocationNotificationTrigger(region: region, repeats: repeats)
         
         scheduleNotification(identifier: identifier, content: content, trigger: trigger)
     }
