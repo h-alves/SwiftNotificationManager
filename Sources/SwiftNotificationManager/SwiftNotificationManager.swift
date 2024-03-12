@@ -41,9 +41,24 @@ public class NotificationManager: ObservableObject {
         }
     }
     
-    public func scheduleTimeIntervalNotification(identifier: String?,title: String, subtitle: String?, body: String, sound: UNNotificationSound?, interval: TimeInterval, repeats: Bool) {
+    public func scheduleTimeIntervalNotification(identifier: String?, title: String, subtitle: String?, body: String, sound: UNNotificationSound?, interval: TimeInterval, repeats: Bool) {
         let content = setupContent(title: title, subtitle: subtitle, body: body, sound: sound)
         let trigger = UNTimeIntervalNotificationTrigger(timeInterval: interval, repeats: repeats)
+        
+        scheduleNotification(identifier: identifier, content: content, trigger: trigger)
+    }
+    
+    public func scheduleDailyNotification(identifier: String?, title: String, subtitle: String?, body: String, sound: UNNotificationSound?, hour: Int, minute: Int?, second: Int?, repeats: Bool) {
+        let content = setupContent(title: title, subtitle: subtitle, body: body, sound: sound)
+        var date = DateComponents()
+        date.hour = hour
+        if minute != nil {
+            date.minute = minute
+        }
+        if second != nil {
+            date.second = second
+        }
+        let trigger = UNCalendarNotificationTrigger(dateMatching: date, repeats: repeats)
         
         scheduleNotification(identifier: identifier, content: content, trigger: trigger)
     }
